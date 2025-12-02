@@ -1,0 +1,98 @@
+.spotify-auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.auth-container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.auth-logo {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.auth-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.auth-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+.auth-button {
+  width: 100%;
+  background: #1DB954;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+}
+
+.auth-button:hover {
+  background: #1ed760;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}
+
+.auth-note {
+  font-size: 12px;
+  color: #999;
+  margin-top: 20px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 30px 20px;
+  }
+  
+  .auth-logo {
+    font-size: 48px;
+  }
+  
+  .auth-title {
+    font-size: 28px;
+  }
+  
+  .auth-description {
+    font-size: 14px;
+  }
+  
+  .auth-button {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+}

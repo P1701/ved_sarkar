@@ -1,0 +1,54 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AppDelegate.swift in Sources = {isa = PBXBuildFile; };
+		SceneDelegate.swift in Sources = {isa = PBXBuildFile; };
+		Models.swift in Sources = {isa = PBXBuildFile; };
+		SpotifyManager.swift in Sources = {isa = PBXBuildFile; };
+		LocationManager.swift in Sources = {isa = PBXBuildFile; };
+		SpotifyAuthViewController.swift in Sources = {isa = PBXBuildFile; };
+		MapViewController.swift in Sources = {isa = PBXBuildFile; };
+		UIComponents.swift in Sources = {isa = PBXBuildFile; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		Hearby.app = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hearby.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AppDelegate.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		SceneDelegate.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		Models.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		SpotifyManager.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyManager.swift; sourceTree = "<group>"; };
+		LocationManager.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		SpotifyAuthViewController.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthViewController.swift; sourceTree = "<group>"; };
+		MapViewController.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		UIComponents.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIComponents.swift; sourceTree = "<group>"; };
+		Info.plist = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		Hearby = {
+			isa = PBXGroup;
+			children = (
+				AppDelegate.swift,
+				SceneDelegate.swift,
+				Models.swift,
+				SpotifyManager.swift,
+				LocationManager.swift,
+				SpotifyAuthViewController.swift,
+				MapViewController.swift,
+				UIComponents.swift,
+				Info.plist,
+			);
+			path = Hearby;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+	};
+	rootObject = {isa = PBXProject; };
+}
