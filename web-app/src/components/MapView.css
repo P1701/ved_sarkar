@@ -2,176 +2,119 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
 }
 
 .map-container {
   width: 100%;
   height: 100%;
-  z-index: 0;
 }
 
-/* Softer map container and reduced UI chrome */
-.leaflet-container {
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-}
-
-.leaflet-control-zoom {
-  background: rgba(255,255,255,0.9);
+/* Logo no longer collides with zoom buttons */
+.map-logo {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 14px;
   border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(2,6,23,0.06);
-}
-
-.popup-content {
-  text-align: center;
-  padding: 5px;
-}
-
-.popup-content strong {
-  font-size: 14px;
-  color: #333;
-}
-
-.popup-content p {
-  margin: 5px 0 0 0;
-  font-size: 12px;
-  color: #666;
-}
-
-.center-button {
-  position: fixed;
-  bottom: 140px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: white;
-  border: 2px solid #4A90E2;
   font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: 600;
+  color: #222;
+  z-index: 900;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.center-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-.center-button:active {
-  transform: scale(0.95);
-}
-
-.settings-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
+.recenter-button {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: white;
-  border: 2px solid #666;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.settings-button:hover {
-  transform: rotate(90deg);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-.settings-menu {
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  z-index: 1001;
-  min-width: 180px;
-}
-
-.settings-menu button {
-  width: 100%;
-  padding: 12px;
-  margin: 5px 0;
   border: none;
-  border-radius: 8px;
-  background: #f0f0f0;
-  color: #333;
-  font-size: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* Custom zoom buttons in bottom-left */
+.zoom-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.zoom-controls button {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+  border: none;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.zoom-controls button:hover {
+  background: #f2f2f2;
+}
+.back-button {
+  position: fixed;      /* always on screen even when map pans/zooms */
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s ease;
+
+  background: rgba(15, 23, 42, 0.95);
+  color: #e5e7eb;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
 }
 
-.settings-menu button:hover {
-  background: #e0e0e0;
-}
-
-.settings-menu button:first-child {
-  background: #ff4444;
-  color: white;
-}
-
-.settings-menu button:first-child:hover {
-  background: #cc0000;
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .center-button {
-    bottom: 120px;
-    right: 15px;
-    width: 45px;
-    height: 45px;
-    font-size: 20px;
-  }
-  
-  .settings-button {
-    top: 15px;
-    right: 15px;
-    width: 45px;
-    height: 45px;
-    font-size: 20px;
-  }
-  
-  .settings-menu {
-    top: 70px;
-    right: 15px;
-    min-width: 160px;
-  }
-}
-
-/* Leaflet popup customization for mobile */
-.leaflet-popup-content-wrapper {
-  border-radius: 12px;
-  padding: 2px;
-}
-
-.leaflet-popup-tip {
+.user-marker-icon {
   background: transparent;
+  border: none;
 }
 
-.leaflet-popup-content {
-  margin: 10px 12px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+.user-marker {
+  background: rgba(15, 23, 42, 0.95);
+  color: #e5e7eb;
+  padding: 4px 8px;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  max-width: 190px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    sans-serif;
 }
 
-@media (max-width: 480px) {
-  .leaflet-popup-content-wrapper {
-    max-width: 250px;
-  }
+.user-marker-name {
+  font-size: 11px;
+  font-weight: 600;
 }
+
+.user-marker-track {
+  font-size: 10px;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.back-button:hover {
+  background: rgba(15, 23, 42, 1);
+}
+
