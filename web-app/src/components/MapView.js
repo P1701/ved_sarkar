@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+// src/components/MapView.js
+import React, { useState, useEffect, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
@@ -39,10 +40,33 @@ const createAlbumIcon = (albumArtUrl, isFriend) => {
   });
 };
 
+// 🌍 Big clusters you can explore when you zoom out / pan
+const FEATURED_CITY_CLUSTERS = [
+  // Bay Area-ish
+  { name: 'Berkeley',     lat: 37.8715, lng: -122.2730, baseIntensity: 0.9 },
+  { name: 'San Francisco',lat: 37.7749, lng: -122.4194, baseIntensity: 0.85 },
+  { name: 'Oakland',      lat: 37.8044, lng: -122.2711, baseIntensity: 0.8 },
+  { name: 'San Jose',     lat: 37.3382, lng: -121.8863, baseIntensity: 0.75 },
+
+  // Other California / West Coast
+  { name: 'Los Angeles',  lat: 34.0522, lng: -118.2437, baseIntensity: 0.85 },
+  { name: 'Sacramento',   lat: 38.5816, lng: -121.4944, baseIntensity: 0.7 },
+  { name: 'Seattle',      lat: 47.6062, lng: -122.3321, baseIntensity: 0.7 },
+  { name: 'Portland',     lat: 45.5152, lng: -122.6784, baseIntensity: 0.65 },
+
+  // Other states / big cities
+  { name: 'New York',     lat: 40.7128, lng: -74.0060, baseIntensity: 0.9 },
+  { name: 'Chicago',      lat: 41.8781, lng: -87.6298, baseIntensity: 0.8 },
+  { name: 'Atlanta',      lat: 33.7490, lng: -84.3880, baseIntensity: 0.75 },
+  { name: 'Houston',      lat: 29.7604, lng: -95.3698, baseIntensity: 0.75 },
+];
+
+const DEFAULT_CENTER = [37.8715, -122.2730]; // Berkeley fallback
+
 function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
   const [userLocation, setUserLocation] = useState(null);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [mapCenter, setMapCenter] = useState([37.8715, -122.2730]); // Berkeley
+  const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const [showFriends, setShowFriends] = useState(false);
   const [friendSearch, setFriendSearch] = useState('');
   const [map, setMap] = useState(null);
@@ -52,6 +76,9 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
     locationManager.requestLocation().then(loc => {
       setUserLocation(loc);
       setMapCenter([loc.latitude, loc.longitude]);
+    }).catch(() => {
+      // stay on default Berkeley center if location fails
+      setMapCenter(DEFAULT_CENTER);
     });
 
     // Get current track
@@ -65,12 +92,44 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
     f.username.toLowerCase().includes(friendSearch.toLowerCase())
   );
 
-  // Prepare heatmap points
-  const heatmapPoints = MOCK_LISTENERS.map(listener => [
-    listener.location.latitude,
-    listener.location.longitude,
-    0.8 // Intensity
-  ]);
+  // 🔥 Heatmap points: old style, adapted to this component
+  const heatmapPoints = useMemo(() => {
+    const points = [];
+
+    const random = (max) => (Math.random() - 0.5) * max;
+
+    const addCluster = (centerLat, centerLng, count, baseIntensity, spread) => {
+      for (let i = 0; i < count; i++) {
+        points.push({
+          lat: centerLat + random(spread),
+          lng: centerLng + random(spread),
+          intensity: baseIntensity * (0.7 + Math.random() * 0.3), // little variation
+        });
+      }
+    };
+
+    // 1️⃣ Local cluster – around YOU (or Berkeley fallback)
+    const [fallbackLat, fallbackLng] = DEFAULT_CENTER;
+    const lat = userLocation ? userLocation.latitude : fallbackLat;
+    const lng = userLocation ? userLocation.longitude : fallbackLng;
+
+    // tight “right around me”
+    addCluster(lat, lng, 30, 0.9, 0.0015);
+    // slightly wider neighborhood
+    addCluster(lat, lng, 25, 0.6, 0.003);
+
+    // 2️⃣ Big city blobs across states
+    FEATURED_CITY_CLUSTERS.forEach(
+      ({ lat: cityLat, lng: cityLng, baseIntensity }) => {
+        // core of the city
+        addCluster(cityLat, cityLng, 40, baseIntensity, 0.03);
+        // surrounding metro area
+        addCluster(cityLat, cityLng, 30, baseIntensity * 0.7, 0.06);
+      }
+    );
+
+    return points;
+  }, [userLocation]);
 
   return (
     <div className="map-view">
@@ -86,7 +145,8 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
 
-        {/* Heatmap Removed as per request */}
+        {/* ✅ OLD-STYLE HEATMAP BACK */}
+        <HeatmapLayer points={heatmapPoints} radius={25} blur={20} />
 
         {/* User Location */}
         {userLocation && (
@@ -101,7 +161,6 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
             <Popup>You are here</Popup>
           </Marker>
         )}
-
 
         {/* Album Art Markers */}
         {MOCK_LISTENERS.map(listener => {
@@ -155,7 +214,10 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
                 <div className="friends-list">
                   {filteredFriends.map(friend => (
                     <div key={friend.id} className="friend-item">
-                      <div className="friend-avatar" style={{ backgroundImage: `url(https://i.pravatar.cc/150?u=${friend.username})` }}></div>
+                      <div
+                        className="friend-avatar"
+                        style={{ backgroundImage: `url(https://i.pravatar.cc/150?u=${friend.username})` }}
+                      ></div>
                       <div className="friend-info">
                         <span className="friend-name">{friend.displayName}</span>
                         <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
@@ -172,7 +234,10 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
             🎤 Booths
           </button>
           <button className="settings-btn" onClick={onOpenSettings}>
-            <div className="avatar" style={{ backgroundImage: `url(https://i.pravatar.cc/150?u=${MOCK_USER.username})` }}></div>
+            <div
+              className="avatar"
+              style={{ backgroundImage: `url(https://i.pravatar.cc/150?u=${MOCK_USER.username})` }}
+            ></div>
           </button>
         </div>
       </div>
