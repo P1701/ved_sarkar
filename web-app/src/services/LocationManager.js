@@ -1,115 +1,61 @@
-// Location Manager using browser Geolocation API
-import { Location } from '../models';
+import { MOCK_USER } from './mockData';
 
 class LocationManager {
   constructor() {
-    this.currentLocation = null;
     this.watchId = null;
-    this.locationCallbacks = [];
   }
 
-  // Check if geolocation is supported
-  get isSupported() {
-    return 'geolocation' in navigator;
-  }
-
-  // Request location permissions and start tracking
-  async requestLocation() {
-    if (!this.isSupported) {
-      throw new Error('Geolocation is not supported by this browser');
-    }
-
+  requestLocation() {
     return new Promise((resolve, reject) => {
+      if (!('geolocation' in navigator)) {
+        console.warn('Geolocation not supported, falling back to mock');
+        resolve({
+          latitude: MOCK_USER.location.latitude,
+          longitude: MOCK_USER.location.longitude,
+          city: MOCK_USER.location.city
+        });
+        return;
+      }
+
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          const city = await this.getCityName(latitude, longitude);
-          this.currentLocation = new Location(latitude, longitude, city);
-          resolve(this.currentLocation);
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            city: 'Current Location' // In a real app, we'd reverse geocode this
+          });
         },
         (error) => {
-          reject(error);
+          console.warn('Geolocation error or denied, falling back to mock', error);
+          resolve({
+            latitude: MOCK_USER.location.latitude,
+            longitude: MOCK_USER.location.longitude,
+            city: MOCK_USER.location.city
+          });
         },
         {
           enableHighAccuracy: true,
-          timeout: 10000,
+          timeout: 5000,
           maximumAge: 0
         }
       );
     });
   }
 
-  // Start watching location changes
   startWatchingLocation(callback) {
-    if (!this.isSupported) {
-      return;
-    }
-
-    this.locationCallbacks.push(callback);
-
-    if (!this.watchId) {
-      this.watchId = navigator.geolocation.watchPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          const city = await this.getCityName(latitude, longitude);
-          this.currentLocation = new Location(latitude, longitude, city);
-          
-          // Notify all callbacks
-          this.locationCallbacks.forEach(cb => cb(this.currentLocation));
-        },
-        (error) => {
-          console.error('Location watch error:', error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 30000
-        }
-      );
-    }
+    // Simulate location updates if needed, for now just return static mock location
+    callback({
+      latitude: MOCK_USER.location.latitude,
+      longitude: MOCK_USER.location.longitude,
+      city: MOCK_USER.location.city
+    });
   }
 
-  // Stop watching location
   stopWatchingLocation() {
     if (this.watchId) {
-      navigator.geolocation.clearWatch(this.watchId);
+      clearInterval(this.watchId);
       this.watchId = null;
-      this.locationCallbacks = [];
     }
-  }
-
-  // Get city name from coordinates using reverse geocoding
-  async getCityName(latitude, longitude) {
-    try {
-      // Using Nominatim (OpenStreetMap) reverse geocoding API
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        return data.address?.city || data.address?.town || data.address?.village || 'Unknown';
-      }
-    } catch (error) {
-      console.error('Error fetching city name:', error);
-    }
-    return null;
-  }
-
-  // Calculate distance between two coordinates in meters
-  calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // Earth's radius in meters
-    const φ1 = (lat1 * Math.PI) / 180;
-    const φ2 = (lat2 * Math.PI) / 180;
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
   }
 }
 

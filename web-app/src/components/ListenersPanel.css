@@ -1,0 +1,125 @@
+.listeners-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #121212;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+}
+
+.listeners-panel.collapsed {
+    transform: translateY(calc(100% - 60px));
+}
+
+.listeners-panel.expanded {
+    transform: translateY(0);
+}
+
+.panel-handle {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: #1e1e1e;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom: 1px solid #282828;
+}
+
+.handle-bar {
+    width: 40px;
+    height: 4px;
+    background: #404040;
+    border-radius: 2px;
+    margin-bottom: 8px;
+}
+
+.panel-title {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 20px 16px;
+    background: #121212;
+}
+
+.listener-card {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #282828;
+}
+
+.card-album-art {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    margin-right: 16px;
+}
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+    /* Truncate text */
+}
+
+.card-track {
+    color: white;
+    font-weight: 500;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-artist {
+    color: #b3b3b3;
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+.card-meta {
+    font-size: 0.75rem;
+    color: #1DB954;
+    margin-top: 2px;
+}
+
+.card-location {
+    color: #808080;
+}
+
+.card-action {
+    margin-left: 12px;
+}
+
+.play-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #404040;
+    background: transparent;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.play-btn:hover {
+    border-color: white;
+    transform: scale(1.05);
+}
