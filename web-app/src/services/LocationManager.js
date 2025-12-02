@@ -8,7 +8,6 @@ class LocationManager {
   requestLocation() {
     return new Promise((resolve, reject) => {
       if (!('geolocation' in navigator)) {
-        console.warn('Geolocation not supported, falling back to mock');
         resolve({
           latitude: MOCK_USER.location.latitude,
           longitude: MOCK_USER.location.longitude,
@@ -22,11 +21,10 @@ class LocationManager {
           resolve({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            city: 'Current Location' // In a real app, we'd reverse geocode this
+            city: 'Current Location'
           });
         },
         (error) => {
-          console.warn('Geolocation error or denied, falling back to mock', error);
           resolve({
             latitude: MOCK_USER.location.latitude,
             longitude: MOCK_USER.location.longitude,
@@ -43,7 +41,6 @@ class LocationManager {
   }
 
   startWatchingLocation(callback) {
-    // Simulate location updates if needed, for now just return static mock location
     callback({
       latitude: MOCK_USER.location.latitude,
       longitude: MOCK_USER.location.longitude,

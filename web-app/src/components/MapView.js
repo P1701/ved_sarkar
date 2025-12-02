@@ -1,4 +1,3 @@
-// src/components/MapView.js
 import React, { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -10,10 +9,8 @@ import spotifyManager from '../services/SpotifyManager';
 import { MOCK_LISTENERS, MOCK_FRIENDS, MOCK_USER } from '../services/mockData';
 import CurrentTrack from './CurrentTrack';
 import ListenersPanel from './ListenersPanel';
-
 import HeatmapLayer from './HeatmapLayer';
 
-// Fix for default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -21,16 +18,13 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-// Helper to add random jitter (~100-200m)
 const addJitter = (lat, lng) => {
-  const JITTER_AMOUNT = 0.002; // Approx 200m
   return [
-    lat + (Math.random() - 0.5) * JITTER_AMOUNT,
-    lng + (Math.random() - 0.5) * JITTER_AMOUNT
+    lat + (Math.random() - 0.5) * 0.002,
+    lng + (Math.random() - 0.5) * 0.002
   ];
 };
 
-// Custom Album Icon
 const createAlbumIcon = (albumArtUrl, isFriend) => {
   return L.divIcon({
     className: 'album-marker',
@@ -40,28 +34,22 @@ const createAlbumIcon = (albumArtUrl, isFriend) => {
   });
 };
 
-// 🌍 Big clusters you can explore when you zoom out / pan
 const FEATURED_CITY_CLUSTERS = [
-  // Bay Area-ish
-  { name: 'Berkeley',     lat: 37.8715, lng: -122.2730, baseIntensity: 0.9 },
-  { name: 'San Francisco',lat: 37.7749, lng: -122.4194, baseIntensity: 0.85 },
-  { name: 'Oakland',      lat: 37.8044, lng: -122.2711, baseIntensity: 0.8 },
-  { name: 'San Jose',     lat: 37.3382, lng: -121.8863, baseIntensity: 0.75 },
-
-  // Other California / West Coast
-  { name: 'Los Angeles',  lat: 34.0522, lng: -118.2437, baseIntensity: 0.85 },
-  { name: 'Sacramento',   lat: 38.5816, lng: -121.4944, baseIntensity: 0.7 },
-  { name: 'Seattle',      lat: 47.6062, lng: -122.3321, baseIntensity: 0.7 },
-  { name: 'Portland',     lat: 45.5152, lng: -122.6784, baseIntensity: 0.65 },
-
-  // Other states / big cities
-  { name: 'New York',     lat: 40.7128, lng: -74.0060, baseIntensity: 0.9 },
-  { name: 'Chicago',      lat: 41.8781, lng: -87.6298, baseIntensity: 0.8 },
-  { name: 'Atlanta',      lat: 33.7490, lng: -84.3880, baseIntensity: 0.75 },
-  { name: 'Houston',      lat: 29.7604, lng: -95.3698, baseIntensity: 0.75 },
+  { name: 'Berkeley', lat: 37.8715, lng: -122.2730, baseIntensity: 0.9 },
+  { name: 'San Francisco', lat: 37.7749, lng: -122.4194, baseIntensity: 0.85 },
+  { name: 'Oakland', lat: 37.8044, lng: -122.2711, baseIntensity: 0.8 },
+  { name: 'San Jose', lat: 37.3382, lng: -121.8863, baseIntensity: 0.75 },
+  { name: 'Los Angeles', lat: 34.0522, lng: -118.2437, baseIntensity: 0.85 },
+  { name: 'Sacramento', lat: 38.5816, lng: -121.4944, baseIntensity: 0.7 },
+  { name: 'Seattle', lat: 47.6062, lng: -122.3321, baseIntensity: 0.7 },
+  { name: 'Portland', lat: 45.5152, lng: -122.6784, baseIntensity: 0.65 },
+  { name: 'New York', lat: 40.7128, lng: -74.0060, baseIntensity: 0.9 },
+  { name: 'Chicago', lat: 41.8781, lng: -87.6298, baseIntensity: 0.8 },
+  { name: 'Atlanta', lat: 33.7490, lng: -84.3880, baseIntensity: 0.75 },
+  { name: 'Houston', lat: 29.7604, lng: -95.3698, baseIntensity: 0.75 },
 ];
 
-const DEFAULT_CENTER = [37.8715, -122.2730]; // Berkeley fallback
+const DEFAULT_CENTER = [37.8715, -122.2730];
 
 function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
   const [userLocation, setUserLocation] = useState(null);
@@ -72,16 +60,13 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
   const [map, setMap] = useState(null);
 
   useEffect(() => {
-    // Get initial location
     locationManager.requestLocation().then(loc => {
       setUserLocation(loc);
       setMapCenter([loc.latitude, loc.longitude]);
     }).catch(() => {
-      // stay on default Berkeley center if location fails
       setMapCenter(DEFAULT_CENTER);
     });
 
-    // Get current track
     spotifyManager.getCurrentlyPlaying().then(track => {
       setCurrentTrack(track);
     });
@@ -92,10 +77,8 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
     f.username.toLowerCase().includes(friendSearch.toLowerCase())
   );
 
-  // 🔥 Heatmap points: old style, adapted to this component
   const heatmapPoints = useMemo(() => {
     const points = [];
-
     const random = (max) => (Math.random() - 0.5) * max;
 
     const addCluster = (centerLat, centerLng, count, baseIntensity, spread) => {
@@ -103,27 +86,21 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
         points.push({
           lat: centerLat + random(spread),
           lng: centerLng + random(spread),
-          intensity: baseIntensity * (0.7 + Math.random() * 0.3), // little variation
+          intensity: baseIntensity * (0.7 + Math.random() * 0.3),
         });
       }
     };
 
-    // 1️⃣ Local cluster – around YOU (or Berkeley fallback)
     const [fallbackLat, fallbackLng] = DEFAULT_CENTER;
     const lat = userLocation ? userLocation.latitude : fallbackLat;
     const lng = userLocation ? userLocation.longitude : fallbackLng;
 
-    // tight “right around me”
     addCluster(lat, lng, 30, 0.9, 0.0015);
-    // slightly wider neighborhood
     addCluster(lat, lng, 25, 0.6, 0.003);
 
-    // 2️⃣ Big city blobs across states
     FEATURED_CITY_CLUSTERS.forEach(
       ({ lat: cityLat, lng: cityLng, baseIntensity }) => {
-        // core of the city
         addCluster(cityLat, cityLng, 40, baseIntensity, 0.03);
-        // surrounding metro area
         addCluster(cityLat, cityLng, 30, baseIntensity * 0.7, 0.06);
       }
     );
@@ -145,10 +122,8 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
 
-        {/* ✅ OLD-STYLE HEATMAP BACK */}
         <HeatmapLayer points={heatmapPoints} radius={25} blur={20} />
 
-        {/* User Location */}
         {userLocation && (
           <Marker
             position={[userLocation.latitude, userLocation.longitude]}
@@ -162,9 +137,7 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
           </Marker>
         )}
 
-        {/* Album Art Markers */}
         {MOCK_LISTENERS.map(listener => {
-          // Determine position: Exact for friends, Jittered for strangers
           const position = listener.isFriend
             ? [listener.location.latitude, listener.location.longitude]
             : addJitter(listener.location.latitude, listener.location.longitude);
@@ -181,7 +154,6 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
                   <div className="popup-info">
                     <strong>{listener.track.name}</strong>
                     <p>{listener.track.artist}</p>
-                    {/* Hide name for strangers to enhance privacy vibe */}
                     <span className="listener-name">
                       {listener.isFriend ? listener.displayName : 'Nearby Listener'}
                     </span>
@@ -194,7 +166,6 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
         })}
       </MapContainer>
 
-      {/* UI Overlays */}
       <div className="top-bar">
         <h1 className="app-title">Hearby</h1>
         <div className="top-actions">
@@ -244,12 +215,11 @@ function MapView({ onLogout, onOpenSettings, onOpenCollab }) {
 
       <ListenersPanel listeners={MOCK_LISTENERS} />
 
-      {/* Recenter Button Overlay */}
       <button
         className="recenter-btn"
         style={{
           position: 'absolute',
-          bottom: '160px', // Above the listeners panel
+          bottom: '160px',
           right: '20px',
           zIndex: 1000
         }}

@@ -2,9 +2,7 @@ import React from "react";
 
 const SpotifyAuth = () => {
   const handleDemoLogin = () => {
-    // Fake "logged in" state for demo purposes
     localStorage.setItem("spotify_token", "demo-token");
-    // Reload to trigger App.js state change
     window.location.reload();
   };
 

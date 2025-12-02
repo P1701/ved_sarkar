@@ -10,7 +10,6 @@ class SpotifyManager {
   }
 
   login() {
-    // No-op for demo mode, handled by SpotifyAuth component
     return Promise.resolve();
   }
 
@@ -24,7 +23,6 @@ class SpotifyManager {
   }
 
   async getCurrentlyPlaying() {
-    // Return a random track from mock data or a fixed one
     return Promise.resolve({
       name: 'Midnight City',
       artist: 'M83',

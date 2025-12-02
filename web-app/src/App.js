@@ -7,7 +7,7 @@ import ProfileSettings from "./screens/ProfileSettings";
 
 function App() {
   const hasToken = !!localStorage.getItem("spotify_token");
-  const [currentScreen, setCurrentScreen] = useState('map'); // map, collab, settings
+  const [currentScreen, setCurrentScreen] = useState('map');
 
   if (!hasToken) {
     return <SpotifyAuth />;

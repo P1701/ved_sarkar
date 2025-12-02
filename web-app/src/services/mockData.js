@@ -1,4 +1,4 @@
-// Mock data for Hearby POC
+
 
 export const MOCK_USER = {
     id: 'current-user',
